@@ -11,27 +11,24 @@
 // libraries
 #include <GSM.h>
 #include <time.h>
-
-// PIN Number
 static const char *PIN = "1111";
-static const char *PHONE_NUMBER = "0485291098";
 
 // initialize the library instance
 GSM gsmAccess; // include a 'true' parameter for debug enabled
 GSMVoiceCall vcs;
 
 struct call{
-    const char *phone_number;
-    int duration;
+  const char *phone_number;
+  int duration;
 };
 
-struct call calls[2] = {
-  { .phone_number = "0485291098", .duration = 10 },
-  { .phone_number = "0473251975", .duration = 5 }
+struct call calls[3] = {
+  {.phone_number = "0485291098", .duration = 1 },
+  {.phone_number = "0485291098", .duration = 1 },
+  {.phone_number = "0485291098", .duration = 1 }
 };
 
 void setup() {
-
   // initialize serial communications and wait for port to open:
   Serial.begin(9600);
   while (!Serial) {
@@ -40,22 +37,12 @@ void setup() {
   Serial.println("Make Voice Call");
 
   // connection state
-  boolean notConnected = true;
-
   // Start GSM shield
-  // If your SIM has PIN, pass it as a parameter of begin() in quotes
-  while (notConnected) {
-    if (gsmAccess.begin(PIN) == GSM_READY) {
-      notConnected = false;
-    } else {
-      Serial.println("Not connected");
-      delay(1000);
-    }
+  while (gsmAccess.begin(PIN) != GSM_READY) {
+    Serial.println("Not connected, Trying again in 1 second");
+    delay(1000);
   }
-
   Serial.println("GSM initialized.");
-  Serial.println("Enter phone number to call.");
-
   make_calls();
 }
 
@@ -69,11 +56,9 @@ void make_calls(){
 }
 
 void make_call(const char *phonenumber, int duration_in_seconds){
-  Serial.print("Calling to ");
-  Serial.print(phonenumber);
-  Serial.print(" for ");
-  Serial.print(duration_in_seconds);
-  Serial.println(" seconds.");
+  char Log[200];
+  sprintf(Log, "Calling to %s for %i seconds.", phonenumber, duration_in_seconds);
+  Serial.println(Log);
   if (vcs.voiceCall(phonenumber)) {
     unsigned long start_time = millis();
     Serial.println("Call Established.");
