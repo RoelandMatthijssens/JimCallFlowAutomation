@@ -10,6 +10,7 @@
 
 // libraries
 #include <GSM.h>
+#include <time.h>
 
 // PIN Number
 static const char *PIN = "1111";
@@ -18,6 +19,16 @@ static const char *PHONE_NUMBER = "0485291098";
 // initialize the library instance
 GSM gsmAccess; // include a 'true' parameter for debug enabled
 GSMVoiceCall vcs;
+
+struct call{
+    const char *phone_number;
+    int duration;
+};
+
+struct call calls[2] = {
+  { .phone_number = "0485291098", .duration = 10 },
+  { .phone_number = "0473251975", .duration = 5 }
+};
 
 void setup() {
 
@@ -45,17 +56,36 @@ void setup() {
   Serial.println("GSM initialized.");
   Serial.println("Enter phone number to call.");
 
-  call_number(PHONE_NUMBER);
+  make_calls();
 }
 
-void call_number(const char *phonenumber){
-  Serial.print("Calling to : ");
-  Serial.println(phonenumber);
+void make_calls(){
+  struct call* ptr = calls;
+  struct call* endPtr = calls + sizeof(calls)/sizeof(calls[0]);
+  while ( ptr < endPtr ){
+     make_call(ptr->phone_number, ptr->duration);
+     ptr++;
+  }
+}
+
+void make_call(const char *phonenumber, int duration_in_seconds){
+  Serial.print("Calling to ");
+  Serial.print(phonenumber);
+  Serial.print(" for ");
+  Serial.print(duration_in_seconds);
+  Serial.println(" seconds.");
   if (vcs.voiceCall(phonenumber)) {
-    Serial.println("Call Established. Enter line to end");
-    while (Serial.read() != '\n' && (vcs.getvoiceCallStatus() == TALKING));
+    unsigned long start_time = millis();
+    Serial.println("Call Established.");
+    while (Serial.read() != '\n' && (vcs.getvoiceCallStatus() == TALKING)){
+      unsigned long time = millis();
+      if(time - start_time >= duration_in_seconds*1000){
+        break;
+      }
+    };
     vcs.hangCall(); //hangup
     Serial.println("Call Finished");
+    Serial.println();
   }
 }
 
