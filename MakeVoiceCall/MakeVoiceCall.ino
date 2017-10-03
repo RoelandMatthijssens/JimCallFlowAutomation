@@ -11,21 +11,31 @@
 // libraries
 #include <GSM.h>
 #include <time.h>
+
+#define MOBILE_VIKINGS "0485291098"
+#define ORANGE "0485291098"
+#define JIM "0485291098"
+#define TEXT "TEXT"
+#define CALL "CALL"
+
 static const char *PIN = "1111";
 
 // initialize the library instance
 GSM gsmAccess; // include a 'true' parameter for debug enabled
 GSMVoiceCall vcs;
+GSM_SMS sms;
 
-struct call{
+struct action{
+  const char *type;
   const char *phone_number;
   int duration;
+  int amount;
+  const char *content;
 };
 
-struct call calls[3] = {
-  {.phone_number = "0485291098", .duration = 1 },
-  {.phone_number = "0485291098", .duration = 1 },
-  {.phone_number = "0485291098", .duration = 1 }
+struct action actions[2] = {
+  {.type = CALL, .phone_number = MOBILE_VIKINGS, .duration = 5, .amount = 1, .content = ""},
+  {.type = TEXT , .phone_number = MOBILE_VIKINGS, .duration = 0, .amount = 1, .content = "TEST SMS"}
 };
 
 void setup() {
@@ -43,35 +53,59 @@ void setup() {
     delay(1000);
   }
   Serial.println("GSM initialized.");
-  make_calls();
+  do_actions();
 }
 
-void make_calls(){
-  struct call* ptr = calls;
-  struct call* endPtr = calls + sizeof(calls)/sizeof(calls[0]);
+void do_actions(){
+  struct action* ptr = actions;
+  struct action* endPtr = actions + sizeof(actions)/sizeof(actions[0]);
   while ( ptr < endPtr ){
-     make_call(ptr->phone_number, ptr->duration);
+     do_action(ptr);
      ptr++;
   }
 }
 
-void make_call(const char *phonenumber, int duration_in_seconds){
-  char Log[200];
-  sprintf(Log, "Calling to %s for %i seconds.", phonenumber, duration_in_seconds);
-  Serial.println(Log);
-  if (vcs.voiceCall(phonenumber)) {
-    unsigned long start_time = millis();
-    Serial.println("Call Established.");
-    while (Serial.read() != '\n' && (vcs.getvoiceCallStatus() == TALKING)){
-      unsigned long time = millis();
-      if(time - start_time >= duration_in_seconds*1000){
-        break;
-      }
-    };
-    vcs.hangCall(); //hangup
-    Serial.println("Call Finished");
-    Serial.println();
+void do_action(action* action){
+  Serial.println(action->type);
+  if(action->type == CALL){
+    make_call(action->phone_number, action->duration, action->amount);
+  } else if (action->type == TEXT){
+    send_text(action->phone_number, action->content, action->amount);
+  } else {
+    ;
   }
+}
+
+void make_call(const char *phonenumber, int duration_in_seconds, int amount){
+  while(amount > 0){
+    char Log[200];
+    sprintf(Log, "Calling to %s for %i seconds.", phonenumber, duration_in_seconds);
+    Serial.println(Log);
+    if (vcs.voiceCall(phonenumber)) {
+      unsigned long start_time = millis();
+      Serial.println("Call Established.");
+      while (Serial.read() != '\n' && (vcs.getvoiceCallStatus() == TALKING)){
+        unsigned long time = millis();
+        if(time - start_time >= duration_in_seconds*1000){
+          break;
+        }
+      };
+      vcs.hangCall(); //hangup
+      Serial.println("Call Finished");
+      Serial.println();
+    }
+    amount--;
+  }
+}
+
+void send_text(const char *phonenumber, const char *content, int amount){
+  char Log[200];
+  sprintf(Log, "Sending \"%s\" to %s.", content, phonenumber);
+  Serial.println(Log);
+  sms.beginSMS(phonenumber);
+  sms.print(content);
+  sms.endSMS();
+  Serial.println("SMS Send");
 }
 
 void loop() {
