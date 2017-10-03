@@ -13,10 +13,13 @@
 #include <time.h>
 
 #define MOBILE_VIKINGS "0485291098"
-#define ORANGE "0485291098"
-#define JIM "0485291098"
-#define TEXT "TEXT"
-#define CALL "CALL"
+#define ORANGE "0498721039"
+#define JIM "0484454683"
+
+enum Type{
+  CALL, 
+  TEXT
+};
 
 static const char *PIN = "1111";
 
@@ -25,20 +28,30 @@ GSM gsmAccess; // include a 'true' parameter for debug enabled
 GSMVoiceCall vcs;
 GSM_SMS sms;
 
+int redPin = 10;
+int bluePin = 11;
+int greenPin = 12;
+
 struct action{
-  const char *type;
+  Type type;
   const char *phone_number;
   int duration;
   int amount;
   const char *content;
 };
 
-struct action actions[2] = {
-  {.type = CALL, .phone_number = MOBILE_VIKINGS, .duration = 5, .amount = 1, .content = ""},
-  {.type = TEXT , .phone_number = MOBILE_VIKINGS, .duration = 0, .amount = 1, .content = "TEST SMS"}
+struct action actions[3] = {
+  {.type = CALL, .phone_number = JIM, .duration = 5, .amount = 1, .content = ""},
+  {.type = CALL, .phone_number = ORANGE, .duration = 5, .amount = 1, .content = ""},
+  {.type = TEXT , .phone_number = JIM, .duration = 0, .amount = 1, .content = "TEST SMS"}
 };
 
 void setup() {
+  pinMode(redPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  digitalWrite(redPin, HIGH);
+  
   // initialize serial communications and wait for port to open:
   Serial.begin(9600);
   while (!Serial) {
@@ -53,7 +66,10 @@ void setup() {
     delay(1000);
   }
   Serial.println("GSM initialized.");
+  digitalWrite(redPin, LOW);
+  digitalWrite(bluePin, HIGH);
   do_actions();
+  digitalWrite(bluePin, LOW);
 }
 
 void do_actions(){
@@ -66,7 +82,6 @@ void do_actions(){
 }
 
 void do_action(action* action){
-  Serial.println(action->type);
   if(action->type == CALL){
     make_call(action->phone_number, action->duration, action->amount);
   } else if (action->type == TEXT){
@@ -109,6 +124,7 @@ void send_text(const char *phonenumber, const char *content, int amount){
 }
 
 void loop() {
+  digitalWrite(greenPin, HIGH);
   while (Serial.available() > 0) {
     char inChar = Serial.read();
   }
