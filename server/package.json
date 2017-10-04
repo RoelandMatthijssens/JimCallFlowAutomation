@@ -1,29 +1,25 @@
 {
-  "name": "node-js-sample",
-  "version": "0.2.0",
-  "description": "A sample Node.js app using Express 4",
+  "name": "Jim-Call-Automation",
+  "description": "REST endpoint for Jim Call Automation",
+  "version": "0.0.1",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node main.js"
   },
   "dependencies": {
-    "express": "^4.13.3"
   },
   "engines": {
     "node": "4.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/heroku/node-js-sample"
+    "url": "https://github.com/RoelandMatthijssens/JimCallFlowAutomation"
   },
   "keywords": [
-    "node",
-    "heroku",
-    "express"
   ],
-  "author": "Mark Pundsack",
+  "author": "Roeland Matthijssens",
   "contributors": [
-    "Zeke Sikelianos <zeke@sikelianos.com> (http://zeke.sikelianos.com)"
+    "RoelandMatthijssens"
   ],
-  "license": "MIT"
+  "license": "WTFPL"
 }
