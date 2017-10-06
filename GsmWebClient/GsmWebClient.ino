@@ -18,14 +18,14 @@
 
 // libraries
 #include <GSM.h>
-
-// PIN Number
-#define PINNUMBER "1111"
+#include <ArduinoJson.h>
 
 // APN data
-#define GPRS_APN       "web.be" // replace your GPRS APN
-#define GPRS_LOGIN     "web"    // replace with your GPRS login
-#define GPRS_PASSWORD  "web" // replace with your GPRS password
+char GPRS_APN[] = "web.be";
+char GPRS_LOGIN[] = "web";
+char GPRS_PASSWORD[] = "web";
+
+char PINNUMBER[] = "1111";
 
 // initialize the library instance
 GSMClient client;
@@ -33,9 +33,12 @@ GPRS gprs;
 GSM gsmAccess;
 
 // URL, path & port (for example: arduino.cc)
-char server[] = "arduino.cc";
-char path[] = "/asciilogo.txt";
-int port = 80; // port 80 is the default for HTTP
+char server[] = "c468dc2e.ngrok.io";
+char path[] = "/nodes/1/actions";
+int port = 80;
+
+char input[200] = "";
+int input_index = 0;
 
 void setup() {
   // initialize serial communications and wait for port to open:
@@ -79,22 +82,45 @@ void setup() {
   }
 }
 
+void clear_input(){
+  input[0] = '\0';
+  input_index = 0;
+}
+
+void input_append(char c){
+  input[input_index] = c;
+  input[input_index+1] = '\0';
+  input_index++;
+}
+
+void do_instruction(){
+  StaticJsonBuffer<200> jsonBuffer;
+  Serial.println("aaaaaaaaaaaaaaaaaaa");
+  JsonObject& root = jsonBuffer.parseObject(input);
+  const char* phone_number = root["phone_number"];
+  Serial.println(phone_number);
+};
+
 void loop() {
-  // if there are incoming bytes available
-  // from the server, read them and print them:
-  if (client.available()) {
+  int is_instruction = 0;
+  while(client.available() || client.connected()) {
     char c = client.read();
-    Serial.print(c);
+    if('{' == c){
+      is_instruction = 1;
+    }
+    if(is_instruction){
+      input_append(c);
+    }
+    if('}' == c){
+      is_instruction = 0;
+      do_instruction();
+      clear_input();
+    }
   }
-
-  // if the server's disconnected, stop the client:
-  if (!client.available() && !client.connected()) {
-    Serial.println();
-    Serial.println("disconnecting.");
-    client.stop();
-
-    // do nothing forevermore:
-    for (;;)
-      ;
-  }
+  Serial.println();
+  Serial.println("disconnecting.");
+  client.stop();
+  Serial.println("FINISHED.");
+  for (;;)
+    ;
 }
