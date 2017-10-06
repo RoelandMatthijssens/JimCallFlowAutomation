@@ -192,6 +192,10 @@ void loop() {
     for(;;) ;
   }
   Serial.println(action_buffer);
+  StaticJsonBuffer<200> json_buffer;
+  JsonObject& action_json = json_buffer.parseObject(action_buffer);
+  const char* phone_number = root["phone_number"];
+  Serial.println(phone_number);
 
   //do_next_action();
   Serial.println("weee");
