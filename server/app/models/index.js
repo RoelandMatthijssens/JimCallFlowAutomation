@@ -1,23 +1,33 @@
-'use strict';
+"use strict";
 
-const Fs = require('fs');
-const Path = require('path');
-const Sequelize = require('sequelize');
-const Settings = require('../../config/settings');
+var fs = require("fs");
+var path = require("path");
+var Sequelize = require("sequelize");
+var env = process.env.NODE_ENV || "development";
+var settings = require(path.join(__dirname, '..',  '..', 'config', 'settings.js'));
+var dbSettings = settings[settings.env].db;
+if (process.env.DATABASE_URL) {
+  var sequelize = new Sequelize(process.env.DATABASE_URL,dbSettings);
+} else {
+  var sequelize = new Sequelize(dbSettings.database, dbSettings.username, dbSettings.password, dbSettings);
+}
+var db = {};
 
-// Database settings for the current environment
-const dbSettings = Settings[Settings.env].db;
-
-const sequelize = new Sequelize(dbSettings.database, dbSettings.user, dbSettings.password, dbSettings);
-const db = {};
-
-// Read all the files in this directory and import them as models
-Fs.readdirSync(__dirname)
-  .filter((file) => (file.indexOf('.') !== 0) && (file !== 'index.js'))
-  .forEach((file) => {
-    const model = sequelize.import(Path.join(__dirname, file));
+fs
+  .readdirSync(__dirname)
+  .filter(function(file) {
+    return (file.indexOf(".") !== 0) && (file !== "index.js");
+  })
+  .forEach(function(file) {
+    var model = sequelize.import(path.join(__dirname, file));
     db[model.name] = model;
   });
+
+Object.keys(db).forEach(function(modelName) {
+  if ("associate" in db[modelName]) {
+    db[modelName].associate(db);
+  }
+});
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
