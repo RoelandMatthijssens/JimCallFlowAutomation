@@ -3,7 +3,8 @@
 module.exports = function(sequelize, DataTypes) {
   var Node = sequelize.define("Node", {
     id: {type: DataTypes.STRING, primaryKey: true},
-    description: DataTypes.STRING
+    description: DataTypes.STRING,
+    state: {type: DataTypes.ENUM('STARTING', 'RUNNING', 'FINISHED'), notNull: true, defaultValue: 'FINISHED'}
   });
 
   Node.associate = function(models) {

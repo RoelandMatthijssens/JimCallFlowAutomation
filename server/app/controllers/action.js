@@ -19,6 +19,7 @@ exports.create = function(req, res) {
 
 exports.for_node = function(req, res) {
     Models.Action.findAll({
+        attributes: ['type', 'phone_number', 'amount', 'duration', 'content'],
         where: {
             NodeId: req.params.nodeId,
             index: req.params.actionIndex
@@ -28,7 +29,15 @@ exports.for_node = function(req, res) {
         console.log(err);
         if (err){
             res.json(err);
-        }
+        };
+        actions.map(function(action){
+            if(action['type'] == 'CALL'){
+                action['type'] = 1;
+            } else {
+                action['type'] = 2;
+            }
+            return action;
+        });
         res.json(actions);
     });
 };

@@ -9,9 +9,12 @@ module.exports = function(app) {
     .post(node.create);
 
   app.route('/nodes/:nodeId')
-    .get(node.view);
-    //.post(node.update);
+    .get(node.view)
+    .post(node.update);
 
   app.route('/nodes/:nodeId/action/:actionIndex')
     .get(action.for_node);
+
+  app.route('/nodes/:nodeId/start')
+    .post(node.start);
 };
