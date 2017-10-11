@@ -23,10 +23,14 @@ GSM_SMS sms;
 GPRS gprs;
 GSMClient client;
 
-int redPin = 10;
-int bluePin = 11;
-int greenPin = 12;
 const char* nodeId = "1";
+const char* GET = "GET";
+const char* POST = "POST";
+static int action_index;
+const int response_buffer_size = 100;
+char GPRS_APN[] = "web.be";
+char GPRS_LOGIN[] = "web";
+char GPRS_PASSWORD[] = "web";
 
 // APN Settings
 
@@ -43,50 +47,41 @@ struct Action {
   const char *content;
 };
 
-void setup() {
-  char GPRS_APN[] = "web.be";
-  char GPRS_LOGIN[] = "web";
-  char GPRS_PASSWORD[] = "web";
-  pinMode(redPin, OUTPUT);
-  pinMode(bluePin, OUTPUT);
-  pinMode(greenPin, OUTPUT);
-  digitalWrite(redPin, HIGH);
-  
-  // initialize serial communications and wait for port to open:
+void setup() {  
   Serial.begin(9600);
   while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
+    ; // wait for serial port to connect.
   }
-  Serial.println("Initializing...");
+  printFreeRam();
+  Serial.println("Init");
 
   // Start GSM shield
   while (gsmAccess.begin(PIN) != GSM_READY) {
-    Serial.println("Not connected to cell network, Trying again in 1 second");
+    Serial.println("Not connected");
     delay(1000);
   };
-  Serial.println("GSM connected to Cell network.");
+  Serial.println("GSM connected");
   while (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD) != GPRS_READY) {
-    Serial.println("Not connected to 4g network, Trying again in 1 second");
+    Serial.println("4G not connected");
     delay(1000);
   }
-  Serial.println("GSM connected to 4G network.");
-  Serial.println("GSM initialized.");
-  digitalWrite(redPin, LOW);
-  digitalWrite(bluePin, HIGH);
-  digitalWrite(bluePin, LOW);
+  Serial.println("4G connected");
+  printFreeRam();
 }
 
 bool request_action(int action_index, char* response_buffer, int buffer_size){
-  const int path_size = 22; // can use up to 2 digits for action_index
+  printFreeRam();
+  const int path_size = 22;
   char path[path_size];
   snprintf(path, path_size, "/nodes/%s/action/%d", nodeId, action_index);
   Serial.println(path);
-  do_request(path, "GET");
+  do_request(path, GET);
   bool result = get_json_body(response_buffer, buffer_size);
+  client.stop();
   if(!response_buffer[0]){
-    Serial.println("No actions found");
     return false;
   }
+  printFreeRam();
   return result;
 }
 
@@ -94,19 +89,24 @@ bool request_node_details(char* response_buffer, int buffer_size){
   const int path_size = 22;
   char path[path_size];
   snprintf(path, path_size, "/nodes/%s", nodeId); 
-  do_request(path, "GET");
+  do_request(path, GET);
   bool result = get_json_body(response_buffer, buffer_size);
+  client.stop();
   if(!response_buffer[0]){
-    Serial.println("Empty node details. Are you sure your node exists?");
+    Serial.println("Empty node details.");
     return false;
   }
   return result;
 }
 
 void do_request(char* path, char* method){
+  printFreeRam();
   char server[] = "c468dc2e.ngrok.io";
   int port = 80;
-  Serial.println("connecting...");
+  Serial.print("connecting: ");
+  Serial.print(server);
+  Serial.print(":");
+  Serial.println(port);
   if (!client.connect(server, port)) {
     Serial.println("connection failed");
     return;
@@ -125,9 +125,11 @@ void do_request(char* path, char* method){
   client.println(server);
   client.println("Connection: close");
   client.println();
+  printFreeRam();
 }
 
 bool get_json_body(char* response_buffer, int buffer_size){
+  printFreeRam();
   bool is_json = false;
   int response_buffer_index = 0;
   while(client.available() || client.connected()) {
@@ -139,7 +141,6 @@ bool get_json_body(char* response_buffer, int buffer_size){
       if(buffer_size < response_buffer_index){
         Serial.print("Command too long. Keep it under ");
         Serial.println(buffer_size);
-        client.stop();
         return false;
       }
       response_buffer[response_buffer_index] = c;
@@ -151,24 +152,45 @@ bool get_json_body(char* response_buffer, int buffer_size){
       break;
     }
   }
-  client.stop();
+  printFreeRam();
   return true;
 }
 
+void do_actions(){
+  printFreeRam();
+  char response_buffer[response_buffer_size] = "";
+  int action_index = 0;
+  while(request_action(action_index, response_buffer, response_buffer_size)){
+    StaticJsonBuffer<response_buffer_size> json_buffer;
+    Serial.println(response_buffer);
+    JsonObject& action_json = json_buffer.parseObject(response_buffer);
+    do_action(action_json);
+    ++action_index;
+    response_buffer[0] = '\0';
+  }
+  Serial.println("No next action found");
+  printFreeRam();
+}
+
 void do_action(JsonObject& action) {
+  printFreeRam();
   int type = action["type"];
   const char* phone_number = action["phone_number"];
   int amount = action["amount"];
+  Serial.println(type);
   if(type == CALL) {
     make_call(phone_number, action["duration"], amount);
   } else if (type == TEXT) {
     send_text(phone_number, action["content"], amount);
   } else {
-    Serial.println("OMG I don\'t know what to do");
+    Serial.print("Wrong action type: ");
+    Serial.println(type);
   }
+  printFreeRam();
 }
 
 void make_call(const char *phonenumber, int duration_in_seconds, int amount){
+  printFreeRam();
   while(amount > 0){
     if (vcs.voiceCall(phonenumber)) {
       unsigned long start_time = millis();
@@ -179,14 +201,16 @@ void make_call(const char *phonenumber, int duration_in_seconds, int amount){
           break;
         }
       };
-      vcs.hangCall(); //hangup
+      vcs.hangCall();
       Serial.println("Call Finished");
     }
     amount--;
   }
+  printFreeRam();
 }
 
 void send_text(const char *phonenumber, const char *content, int amount){
+  printFreeRam();
   while(amount > 0){
     sms.beginSMS(phonenumber);
     sms.print(content);
@@ -194,35 +218,53 @@ void send_text(const char *phonenumber, const char *content, int amount){
     Serial.println("SMS Send");
     amount--;
   }
+  printFreeRam();
 }
 
-int action_index = 0;
-void loop() {
-  digitalWrite(greenPin, HIGH);
-  const int response_buffer_size = 100;
-  char response_buffer[response_buffer_size] = "";
+void set_finished(){
+  printFreeRam();
+  const int path_size = 25;
+  char path[path_size];
+  snprintf(path, path_size, "/nodes/%s/finish", nodeId);
+  Serial.println(path);
+  do_request(path, POST);
+  client.stop();
+  printFreeRam();
+}
+
+bool ready_to_start(){
+  printFreeRam();
+  char* response_buffer = new char[response_buffer_size];
   StaticJsonBuffer<response_buffer_size> json_buffer;
   if(!request_node_details(response_buffer, response_buffer_size)){
     Serial.println("Node not found");
-    for(;;);
+    delete [] response_buffer;
+    return false;
   }
-  Serial.print("e ");Serial.println(action_index);
   JsonObject& node_details = json_buffer.parseObject(response_buffer);
   if(node_details["state"]!="STARTING"){
-    Serial.println("Server says node is not ready to start yet");
-    for(;;);
-    
+    Serial.println("Node waiting");
+    delete [] response_buffer;
+    return false;
   };
-  response_buffer[0] = '\0';
-  if(!request_action(action_index, response_buffer, response_buffer_size)){
-    Serial.println("No next action found");
-    for(;;);
+  printFreeRam();
+  delete [] response_buffer;
+  return true;
+}
+
+int printFreeRam (){
+  extern int __heap_start, *__brkval;
+  int v;
+  Serial.println((int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval));
+}
+
+void loop() {
+  printFreeRam();
+  if(ready_to_start()){
+    do_actions();
+    set_finished();
   }
-  Serial.println(response_buffer);
-  JsonObject& action_json = json_buffer.parseObject(response_buffer);
-  do_action(action_json);
-  
-  Serial.println("Action finished, polling next action");
-  ++action_index;
+  delay(5000);
+  printFreeRam();
 }
 
