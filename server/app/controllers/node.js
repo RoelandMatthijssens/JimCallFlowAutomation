@@ -24,10 +24,22 @@ exports.update = function(req, res){
 };
 
 exports.view = function(req, res) {
-    Models.Node.findById(req.params.nodeId).then(function(node, err) {
+    Models.Node.findOne({
+        attributes: ['id', 'description', 'state'],
+        where: {
+            id: req.params.nodeId
+        }
+    }).then(function(node, err) {
         if (err){
             res.send(err);
         }
+        res.json(node);
+    });
+};
+
+exports.finish = function(req, res){
+    Models.Node.findById(req.params.nodeId).then(function(node, err) {
+        node.updateAttributes({state: 'FINISHED'});
         res.json(node);
     });
 };

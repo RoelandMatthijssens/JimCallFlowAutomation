@@ -15,6 +15,9 @@ module.exports = function(app) {
   app.route('/nodes/:nodeId/action/:actionIndex')
     .get(action.for_node);
 
+  app.route('/nodes/:nodeId/finish')
+    .post(node.finish);
+
   app.route('/nodes/:nodeId/start')
     .post(node.start);
 };
