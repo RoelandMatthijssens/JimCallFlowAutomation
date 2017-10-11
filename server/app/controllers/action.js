@@ -17,26 +17,34 @@ exports.create = function(req, res) {
 };
 
 exports.for_node = function(req, res) {
-    Models.Action.findOne({
-        attributes: ['type', 'phone_number', 'amount', 'duration', 'content'],
+    Models.Node.findOne({
         where: {
-            NodeId: req.params.nodeId,
-            index: req.params.actionIndex
+            id: req.params.nodeId,
         }
-    }).then(function(action, err) {
-        if (err){
-            res.json(err);
-        };
-        if(action){
-            if(action['type'] == 'CALL'){
-                action['type'] = 1;
-            } else {
-                action['type'] = 2;
-            }
-            res.json(action);
-        } else {
-            res.json();
-        }
+    }).then(function(node, err) {
+        Models.Batch.findById(node.BatchId).then(function(batch, err){
+            Models.Action.findOne({
+                attributes: ['type', 'phone_number', 'amount', 'duration', 'content'],
+                where: {
+                    index: req.params.actionIndex,
+                    BatchId: batch.id
+                }
+            }).then(function(action, err){
+                if(action){
+                    if(action['type'] == 'CALL'){
+                        action['type'] = 1;
+                    } else {
+                        action['type'] = 2;
+                    }
+                    res.json(action);
+                } else {
+                    res.json();
+                }
+            });
+        });
+        //if (err){
+        //    res.json(err);
+        //};
     });
 };
 
