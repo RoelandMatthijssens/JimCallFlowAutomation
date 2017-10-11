@@ -8,10 +8,10 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   Node.associate = function(models) {
-    // Using additional options like CASCADE etc for demonstration
-    // Can also simply do Task.belongsTo(models.User);
-    Node.hasMany(models.Action, {
-      as: 'actions'
+    Node.belongsTo(models.Batch, {
+      foreignKey: {
+        allowNull: true
+      }
     });
   }
 

@@ -12,7 +12,6 @@ exports.create = function(req, res) {
   Models.Action.build(req.body)
     .save()
     .then(function(new_action){
-        console.log(new_action);
         res.json(new_action);
     });
 };
@@ -38,5 +37,25 @@ exports.for_node = function(req, res) {
         } else {
             res.json();
         }
+    });
+};
+
+exports.view = function(req, res) {
+    Models.Action.findOne({
+        where: {
+            id: req.params.actionId
+        }
+    }).then(function(action, err) {
+        if (err){
+            res.send(err);
+        }
+        res.json(action);
+    });
+};
+
+exports.update = function(req, res){
+    Models.Action.findById(req.params.actionId).then(function(action, err) {
+        action.updateAttributes(req.body);
+        res.json(action);
     });
 };

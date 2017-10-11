@@ -8,8 +8,10 @@ app.use(bodyParser());
 
 var nodeRoutes = require('./app/routes/nodes');
 var actionRoutes = require('./app/routes/actions');
+var batchRoutes = require('./app/routes/batches');
 nodeRoutes(app);
 actionRoutes(app);
+batchRoutes(app);
 
 models.sequelize.sync().then(() => {
     app.listen(port);

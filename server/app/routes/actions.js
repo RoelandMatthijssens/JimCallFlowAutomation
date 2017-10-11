@@ -6,4 +6,8 @@ module.exports = function(app) {
   app.route('/actions')
     .get(action.list)
     .post(action.create);
+
+  app.route('/actions/:actionId')
+    .get(action.view)
+    .post(action.update);
 };
