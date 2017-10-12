@@ -1,0 +1,30 @@
+This sketch will set up the Arduino to poll the server for actions.
+If the server sets the node's state to `STARTING` it will request each of the actions one by one until the server says
+there are no more actions. At that point the node will notify the server that it has finished all its tasks by setting it's state to
+`FINISHED`. It will then start polling again for the starting state to complete the cycle.
+
+
+The logic is separated over several files. But you will notice that there are no include statements. Compiling the
+sketch using the arduinoIDE will take all the `.ino` files in the folder and concatenate them into a single `.cpp`
+file. This is uploaded to the device and the setup and loop functions are run.
+
+
+A full cycle looks as follows:
+1. Request the node state on the server (ID is hard coded per node)
+2. Keep requesting until the state is `STARTING`
+3. Set the state to `RUNNING` (not yet implemented)
+4. Request the nodes first action. (using `http://<serveraddress>/nodes/<nodeId>/action/0`)
+5. Dispatch on the actions type and perform the actions (Call or Text).
+6. Request the next action by bumping the actionIndex number (`http://<serveraddress>/nodes/<nodeId>/action/1`)
+7. Keep requesting and performing the actions until the server responds with an empty action.
+8. Notify that there are no more actions to perform (over serial port)
+9. Notify the server that we are finished with the action by posting to `http://<serveraddress>/nodes/<nodeId>/finish`
+10. Start over by polling the server side state of the node
+
+
+Performing an actions looks as follows:
+1. Check the type of the action (1 = CALL, 2 = TEXT)
+2a. When making a call get the target phone number, the duration of the call and the amount of how many of these calls to
+perform.
+2b. When sending a text get the target phone number, the content of the text and the amount of these texts to send.
+3. Call the GSMshield to actually perform the actions (for calls start a timer so we can hang up as intended).
