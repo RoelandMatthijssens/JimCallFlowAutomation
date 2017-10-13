@@ -1,10 +1,14 @@
 FROM node
 
-WORKDIR /app
-ADD package.json /app/
+WORKDIR /server
+COPY package.json /server/
 RUN npm install
-ADD . /app
+COPY . /server
+
+RUN set -xe \
+    && mkdir -vp /server/db/
 
 CMD []
 ENTRYPOINT ["nodejs", "main"]
 
+EXPOSE 8000
