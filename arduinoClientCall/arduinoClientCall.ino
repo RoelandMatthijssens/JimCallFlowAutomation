@@ -5,16 +5,16 @@
 #include <ArduinoJson.h>
 
 static const char* PIN = "1111";
-static const char* SERVER = "http://5a4ed1f2.ngrok.io";
+static const char* SERVER = "e4c2b3ec.ngrok.io";  
 
 // initialize the library instance
 GSM gsmAccess; // include a 'true' parameter for debug enabled
-GSMVoiceCall vcs;
+GSMVoiceCall voiceCallService;
 GSM_SMS sms;
 GPRS gprs;
 GSMClient gsmClient;
 
-const char* nodeId = "alfa";
+const char* nodeId = "alpha";
 const char* GET = "GET";
 const char* POST = "POST";
 static int actionIndex;

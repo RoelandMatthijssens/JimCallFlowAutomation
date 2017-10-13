@@ -1,9 +1,8 @@
-bool requestAction(int actionIndex, char* responseBuffer, int bufferSize, GSMClient client){
+bool requestAction(int actionIndex, char* responseBuffer, int bufferSize, GSMClient& client){
   printFreeRam();
   const int pathSize = 22;
   char path[pathSize];
   snprintf(path, pathSize, "/nodes/%s/action/%d", nodeId, actionIndex);
-  Serial.println(path);
   doRequest(path, GET, client);
   bool result = getJsonBody(responseBuffer, bufferSize, client);
   client.stop();
@@ -14,7 +13,7 @@ bool requestAction(int actionIndex, char* responseBuffer, int bufferSize, GSMCli
   return result;
 }
 
-bool requestNodeDetails(char* responseBuffer, int bufferSize, GSMClient client){
+bool requestNodeDetails(char* responseBuffer, int bufferSize, GSMClient& client){
   const int pathSize = 22;
   char path[pathSize];
   snprintf(path, pathSize, "/nodes/%s", nodeId);
@@ -28,13 +27,9 @@ bool requestNodeDetails(char* responseBuffer, int bufferSize, GSMClient client){
   return result;
 }
 
-void doRequest(char* path, char* method, GSMClient client){
+void doRequest(char* path, char* method, GSMClient& client){
   printFreeRam();
   int port = 80;
-  Serial.print("connecting: ");
-  Serial.print(SERVER);
-  Serial.print(":");
-  Serial.println(port);
   if (!client.connect(SERVER, port)) {
     Serial.println("connection failed");
     return;

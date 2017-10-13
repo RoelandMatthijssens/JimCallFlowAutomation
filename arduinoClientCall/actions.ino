@@ -11,11 +11,17 @@ struct Action {
   const char *content;
 };
 
-void doActions(GSMClient client){
+void doActions(GSMClient& client){
   printFreeRam();
   char responseBuffer[responseBufferSize] = "";
   int actionIndex = 0;
   while(requestAction(actionIndex, responseBuffer, responseBufferSize, client)){
+    StaticJsonBuffer<responseBufferSize> jsonBuffer;
+    Serial.println(responseBuffer);
+    JsonObject& actionJson = jsonBuffer.parseObject(responseBuffer);
+    doAction(actionJson);
+    ++actionIndex;
+    responseBuffer[0] = '\0';
   }
   Serial.println("No next action found");
   printFreeRam();
@@ -26,7 +32,6 @@ void doAction(JsonObject& action) {
   int type = action["type"];
   const char* phoneNumber = action["phoneNumber"];
   int amount = action["amount"];
-  Serial.println(type);
   if(type == CALL) {
     makeCall(phoneNumber, action["duration"], amount);
   } else if (type == TEXT) {
@@ -53,16 +58,16 @@ void sendText(const char *phonenumber, const char *content, int amount){
 void makeCall(const char *phonenumber, int durationInSeconds, int amount){
   printFreeRam();
   while(amount > 0){
-      if (vcs.voiceCall(phonenumber)) {
-          unsigned long start_time = millis();
+      if (voiceCallService.voiceCall(phonenumber)) {
+          unsigned long startTime = millis();
           Serial.println("Call Established.");
-          while (Serial.read() != '\n' && (vcs.getvoiceCallStatus() == TALKING)){
+          while (Serial.read() != '\n' && (voiceCallService.getvoiceCallStatus() == TALKING)){
               unsigned long time = millis();
-              if(time - start_time >= duration_in_seconds*1000){
+              if(time - startTime >= durationInSeconds*1000){
                   break;
               }
           };
-          vcs.hangCall();
+          voiceCallService.hangCall();
           Serial.println("Call Finished");
       }
       amount--;
@@ -70,18 +75,17 @@ void makeCall(const char *phonenumber, int durationInSeconds, int amount){
   printFreeRam();
 }
 
-void setFinished(GSMClient client){
+void setFinished(GSMClient& client){
   printFreeRam();
   const int pathSize = 25;
   char path[pathSize];
   snprintf(path, pathSize, "/nodes/%s/finish", nodeId);
-  Serial.println(path);
   doRequest(path, POST, client);
   client.stop();
   printFreeRam();
 }
 
-bool readyToStart(GSMClient client){
+bool readyToStart(GSMClient& client){
   printFreeRam();
   char* responseBuffer = new char[responseBufferSize];
   StaticJsonBuffer<responseBufferSize> jsonBuffer;

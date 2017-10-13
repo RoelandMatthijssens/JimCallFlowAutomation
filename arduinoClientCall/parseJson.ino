@@ -1,4 +1,4 @@
-bool getJsonBody(char* responseBuffer, int bufferSize, GSMClient client){
+bool getJsonBody(char* responseBuffer, int bufferSize, GSMClient& client){
   printFreeRam();
   bool isJson = false;
   int responseBufferIndex = 0;

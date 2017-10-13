@@ -2,7 +2,6 @@
 module.exports = function(app) {
   const action = require('../controllers/action');
 
-  // todoList Routes
   app.route('/actions')
     .get(action.list)
     .post(action.create);
