@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = function(sequelize, DataTypes) {
-  var Batch = sequelize.define("Batch", {
+  const Batch = sequelize.define("Batch", {
     id: {type: DataTypes.STRING, primaryKey: true},
   });
 

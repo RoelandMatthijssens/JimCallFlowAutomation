@@ -1,7 +1,7 @@
 'use strict';
 module.exports = function(app) {
-  var node = require('../controllers/node');
-  var action = require('../controllers/action');
+  const node = require('../controllers/node');
+  const action = require('../controllers/action');
 
   // todoList Routes
   app.route('/nodes')
@@ -13,7 +13,7 @@ module.exports = function(app) {
     .post(node.update);
 
   app.route('/nodes/:nodeId/action/:actionIndex')
-    .get(action.for_node);
+    .get(action.forNode);
 
   app.route('/nodes/:nodeId/finish')
     .post(node.finish);

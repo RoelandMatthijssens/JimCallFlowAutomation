@@ -1,6 +1,6 @@
 'use strict';
 module.exports = function(app) {
-  var batch = require('../controllers/batch');
+  const batch = require('../controllers/batch');
 
   // todoList Routes
   app.route('/batches')

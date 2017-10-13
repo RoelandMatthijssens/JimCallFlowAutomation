@@ -1,6 +1,6 @@
 'use strict';
 
-var Models = require('../models');
+const Models = require('../models');
 
 exports.list = function(req, res) {
   Models.Batch.findAll().then(function(batches){
@@ -11,8 +11,8 @@ exports.list = function(req, res) {
 exports.create = function(req, res) {
   Models.Batch.build(req.body)
     .save()
-    .then(function(new_batch){
-        res.json(new_batch);
+    .then(function(newBatch){
+        res.json(newBatch);
     });
 };
 

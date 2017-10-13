@@ -1,6 +1,6 @@
 'use strict';
 
-var Models = require('../models');
+const Models = require('../models');
 
 exports.list = function(req, res) {
   Models.Action.findAll().then(function(actions){
@@ -11,12 +11,12 @@ exports.list = function(req, res) {
 exports.create = function(req, res) {
   Models.Action.build(req.body)
     .save()
-    .then(function(new_action){
-        res.json(new_action);
+    .then(function(newAction){
+        res.json(newAction);
     });
 };
 
-exports.for_node = function(req, res) {
+exports.forNode = function(req, res) {
     Models.Node.findOne({
         where: {
             id: req.params.nodeId,
@@ -24,7 +24,7 @@ exports.for_node = function(req, res) {
     }).then(function(node, err) {
         Models.Batch.findById(node.BatchId).then(function(batch, err){
             Models.Action.findOne({
-                attributes: ['type', 'phone_number', 'amount', 'duration', 'content'],
+                attributes: ['type', 'phoneNumber', 'amount', 'duration', 'content'],
                 where: {
                     index: req.params.actionIndex,
                     BatchId: batch.id
@@ -42,9 +42,6 @@ exports.for_node = function(req, res) {
                 }
             });
         });
-        //if (err){
-        //    res.json(err);
-        //};
     });
 };
 

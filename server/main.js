@@ -1,14 +1,14 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var app = express();
-var port = process.env.PORT || 8000;
-var models = require('./app/models');
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const port = process.env.PORT || 8000;
+const models = require('./app/models');
 
 app.use(bodyParser());
 
-var nodeRoutes = require('./app/routes/nodes');
-var actionRoutes = require('./app/routes/actions');
-var batchRoutes = require('./app/routes/batches');
+const nodeRoutes = require('./app/routes/nodes');
+const actionRoutes = require('./app/routes/actions');
+const batchRoutes = require('./app/routes/batches');
 nodeRoutes(app);
 actionRoutes(app);
 batchRoutes(app);

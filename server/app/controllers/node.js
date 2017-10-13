@@ -1,6 +1,6 @@
 'use strict';
 
-var Models = require('../models');
+const Models = require('../models');
 
 exports.list = function(req, res) {
   Models.Node.findAll().then(function(nodes){
@@ -11,8 +11,8 @@ exports.list = function(req, res) {
 exports.create = function(req, res) {
   Models.Node.build(req.body)
     .save()
-    .then(function(new_node){
-        res.json(new_node);
+    .then(function(newNode){
+        res.json(newNode);
     });
 };
 
