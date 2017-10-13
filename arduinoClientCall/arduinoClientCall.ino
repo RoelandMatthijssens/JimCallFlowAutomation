@@ -5,7 +5,7 @@
 #include <ArduinoJson.h>
 
 static const char* PIN = "1111";
-static const char* SERVER = "e4c2b3ec.ngrok.io";  
+static const char* SERVER = "call-flow-testing.appspot.com";  
 
 // initialize the library instance
 GSM gsmAccess; // include a 'true' parameter for debug enabled
