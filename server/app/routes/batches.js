@@ -9,5 +9,6 @@ module.exports = function(app) {
 
   app.route('/batches/:batchId')
     .get(batch.view)
-    .post(batch.update);
+    .post(batch.update)
+    .delete(batch.destroy);
 };

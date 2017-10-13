@@ -10,7 +10,8 @@ module.exports = function(app) {
 
   app.route('/nodes/:nodeId')
     .get(node.view)
-    .post(node.update);
+    .post(node.update)
+    .delete(node.destroy);
 
   app.route('/nodes/:nodeId/action/:actionIndex')
     .get(action.forNode);

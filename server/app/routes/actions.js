@@ -8,5 +8,6 @@ module.exports = function(app) {
 
   app.route('/actions/:actionId')
     .get(action.view)
-    .post(action.update);
+    .post(action.update)
+    .delete(action.destroy);
 };

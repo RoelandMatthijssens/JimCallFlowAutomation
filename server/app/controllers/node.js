@@ -23,6 +23,13 @@ exports.update = function(req, res){
     });
 };
 
+exports.destroy = function(req, res){
+    Models.Node.findById(req.params.nodeId).then(function(node, err) {
+        node.destroy();
+        res.json("");
+    });
+};
+
 exports.view = function(req, res) {
     Models.Node.findOne({
         attributes: ['id', 'description', 'state'],

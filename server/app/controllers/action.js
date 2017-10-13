@@ -64,3 +64,10 @@ exports.update = function(req, res){
         res.json(action);
     });
 };
+
+exports.destroy = function(req, res){
+    Models.Action.findById(req.params.actionId).then(function(action, err) {
+        action.destroy();
+        res.json("");
+    });
+};

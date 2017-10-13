@@ -36,3 +36,10 @@ exports.update = function(req, res){
         res.json(batch);
     });
 };
+
+exports.destroy = function(req, res){
+    Models.Batch.findById(req.params.batchId).then(function(batch, err) {
+        batch.destroy();
+        res.json("");
+    });
+};
