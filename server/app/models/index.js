@@ -6,10 +6,11 @@ const Sequelize = require("sequelize");
 const env = process.env.NODE_ENV || "development";
 const settings = require(path.join(__dirname, '..',  '..', 'config', 'settings.js'));
 const dbSettings = settings[settings.env].db;
+let sequelize;
 if (process.env.DATABASE_URL) {
-  const sequelize = new Sequelize(process.env.DATABASE_URL,dbSettings);
+  sequelize = new Sequelize(process.env.DATABASE_URL,dbSettings);
 } else {
-  const sequelize = new Sequelize(dbSettings.database, dbSettings.username, dbSettings.password, dbSettings);
+  sequelize = new Sequelize(dbSettings.database, dbSettings.username, dbSettings.password, dbSettings);
 }
 const db = {};
 

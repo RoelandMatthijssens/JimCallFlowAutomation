@@ -53,6 +53,19 @@ void sendText(const char *phonenumber, const char *content, int amount){
 void makeCall(const char *phonenumber, int durationInSeconds, int amount){
   printFreeRam();
   while(amount > 0){
+      if (vcs.voiceCall(phonenumber)) {
+          unsigned long start_time = millis();
+          Serial.println("Call Established.");
+          while (Serial.read() != '\n' && (vcs.getvoiceCallStatus() == TALKING)){
+              unsigned long time = millis();
+              if(time - start_time >= duration_in_seconds*1000){
+                  break;
+              }
+          };
+          vcs.hangCall();
+          Serial.println("Call Finished");
+      }
+      amount--;
   }
   printFreeRam();
 }

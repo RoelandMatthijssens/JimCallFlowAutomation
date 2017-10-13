@@ -30,20 +30,19 @@ bool requestNodeDetails(char* responseBuffer, int bufferSize, GSMClient client){
 
 void doRequest(char* path, char* method, GSMClient client){
   printFreeRam();
-  char server[] = "c468dc2e.ngrok.io";
   int port = 80;
   Serial.print("connecting: ");
-  Serial.print(server);
+  Serial.print(SERVER);
   Serial.print(":");
   Serial.println(port);
-  if (!client.connect(server, port)) {
+  if (!client.connect(SERVER, port)) {
     Serial.println("connection failed");
     return;
   }
 
   Serial.println("connected.");
   Serial.print("requesting ");
-  Serial.print(server);
+  Serial.print(SERVER);
   Serial.println(path);
   // Make a HTTP request:
   client.print(method);
@@ -51,7 +50,7 @@ void doRequest(char* path, char* method, GSMClient client){
   client.print(path);
   client.println(" HTTP/1.1");
   client.print("Host: ");
-  client.println(server);
+  client.println(SERVER);
   client.println("Connection: close");
   client.println();
   printFreeRam();
