@@ -1,0 +1,29 @@
+{
+  "name": "Call-Automation",
+  "description": "REST endpoint for Call Automation",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "express": "^4.14.0",
+    "sequelize": "^4.13.4",
+    "sqlite3": "^3.1.13",
+    "body-parser": "*"
+  },
+  "engines": {
+    "node": "4.2.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RoelandMatthijssens/JimCallFlowAutomation"
+  },
+  "keywords": [
+  ],
+  "author": "Roeland Matthijssens",
+  "contributors": [
+    "RoelandMatthijssens"
+  ],
+  "license": "WTFPL"
+}

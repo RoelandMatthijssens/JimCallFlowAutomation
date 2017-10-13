@@ -25,77 +25,66 @@
 #include <GSM.h>
 
 // PIN Number
-#define PINNUMBER "1111"
+static const char* PIN = "1111";
+
+int redPin = 10;
+int bluePin = 11;
+int greenPin = 12;
 
 // initialize the library instance
 GSM gsmAccess;
-GSMVoiceCall vcs;
+GSMVoiceCall voiceCallService;
 
 // Array to hold the number for the incoming call
-char numtel[20];
 
 void setup() {
+  pinMode(redPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  digitalWrite(redPin, HIGH);
   // initialize serial communications and wait for port to open:
   Serial.begin(9600);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
-
-  Serial.println("Receive Voice Call");
-
-  // connection state
-  boolean notConnected = true;
-
+  
   // Start GSM shield
-  // If your SIM has PIN, pass it as a parameter of begin() in quotes
-  while (notConnected) {
-    if (gsmAccess.begin(PINNUMBER) == GSM_READY) {
-      notConnected = false;
-    } else {
-      Serial.println("Not connected");
-      delay(1000);
-    }
+  while (gsmAccess.begin(PIN) != GSM_READY) {
+    Serial.println("Not connected, Trying again in 1 second");
+    delay(1000);
   }
-
+  Serial.println("GSM initialized.");
+  
   // This makes sure the modem correctly reports incoming events
-  vcs.hangCall();
-
+  voiceCallService.hangCall();
+  digitalWrite(redPin, LOW);
+  digitalWrite(greenPin, HIGH);
   Serial.println("Waiting for a call");
 }
 
 void loop() {
+  char incomingTelephoneNr[20];
+  digitalWrite(greenPin, LOW);
+  digitalWrite(bluePin, LOW);
   // Check the status of the voice call
-  switch (vcs.getvoiceCallStatus()) {
+  switch (voiceCallService.getvoiceCallStatus()) {
     case IDLE_CALL: // Nothing is happening
-
+      digitalWrite(greenPin, HIGH);
       break;
-
     case RECEIVINGCALL: // Yes! Someone is calling us
-
-      Serial.println("RECEIVING CALL");
-
+      digitalWrite(bluePin, HIGH);
       // Retrieve the calling number
-      vcs.retrieveCallingNumber(numtel, 20);
-
-      // Print the calling number
-      Serial.print("Number:");
-      Serial.println(numtel);
-
+      voiceCallService.retrieveCallingNumber(incomingTelephoneNr, 20);
+      Serial.print("Receiving call from: ");
+      Serial.println(incomingTelephoneNr);
       // Answer the call, establish the call
-      vcs.answerCall();
+      voiceCallService.answerCall();
       break;
-
-    case TALKING:  // In this case the call would be established
-
-      Serial.println("TALKING. Press enter to hang up.");
-      while (Serial.read() != '\n') {
-        delay(100);
-      }
-      vcs.hangCall();
-      Serial.println("Hanging up and waiting for the next call.");
+    case TALKING:
+      digitalWrite(bluePin, HIGH);
       break;
   }
-  delay(1000);
+  delay(100);
 }
 
 
