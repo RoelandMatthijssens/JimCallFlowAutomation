@@ -25,7 +25,7 @@
 #include <GSM.h>
 
 // PIN Number
-#define PIN "1111"
+static const char* PIN = "1111";
 
 int redPin = 10;
 int bluePin = 11;
@@ -33,10 +33,9 @@ int greenPin = 12;
 
 // initialize the library instance
 GSM gsmAccess;
-GSMVoiceCall vcs;
+GSMVoiceCall voiceCallService;
 
 // Array to hold the number for the incoming call
-char numtel[20];
 
 void setup() {
   pinMode(redPin, OUTPUT);
@@ -48,9 +47,7 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
-  Serial.println("Receiving Voice Calls on: 0498/72 10 39");
-
-  // connection state
+  
   // Start GSM shield
   while (gsmAccess.begin(PIN) != GSM_READY) {
     Serial.println("Not connected, Trying again in 1 second");
@@ -59,28 +56,29 @@ void setup() {
   Serial.println("GSM initialized.");
   
   // This makes sure the modem correctly reports incoming events
-  vcs.hangCall();
+  voiceCallService.hangCall();
   digitalWrite(redPin, LOW);
   digitalWrite(greenPin, HIGH);
   Serial.println("Waiting for a call");
 }
 
 void loop() {
+  char incomingTelephoneNr[20];
   digitalWrite(greenPin, LOW);
   digitalWrite(bluePin, LOW);
   // Check the status of the voice call
-  switch (vcs.getvoiceCallStatus()) {
+  switch (voiceCallService.getvoiceCallStatus()) {
     case IDLE_CALL: // Nothing is happening
       digitalWrite(greenPin, HIGH);
       break;
     case RECEIVINGCALL: // Yes! Someone is calling us
       digitalWrite(bluePin, HIGH);
       // Retrieve the calling number
-      vcs.retrieveCallingNumber(numtel, 20);
+      voiceCallService.retrieveCallingNumber(incomingTelephoneNr, 20);
       Serial.print("Receiving call from: ");
-      Serial.println(numtel);
+      Serial.println(incomingTelephoneNr);
       // Answer the call, establish the call
-      vcs.answerCall();
+      voiceCallService.answerCall();
       break;
     case TALKING:
       digitalWrite(bluePin, HIGH);

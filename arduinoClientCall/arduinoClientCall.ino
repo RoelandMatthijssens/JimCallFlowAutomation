@@ -1,13 +1,3 @@
-/*
- Make Voice Call
-
- This sketch, for the Arduino GSM shield, puts a voice call to
- a remote phone number that you enter through the serial monitor.
- To make it work, open the serial monitor, and when you see the
- READY message, type a phone number. Make sure the serial monitor
- is set to send a just newline when you press return.
-*/
-
 // libraries
 #include <GSM.h>
 #include <time.h>
@@ -21,13 +11,13 @@ GSM gsmAccess; // include a 'true' parameter for debug enabled
 GSMVoiceCall vcs;
 GSM_SMS sms;
 GPRS gprs;
-GSMClient client;
+GSMClient gsmClient;
 
 const char* nodeId = "1";
 const char* GET = "GET";
 const char* POST = "POST";
-static int action_index;
-const int response_buffer_size = 100;
+static int actionIndex;
+const int responseBufferSize = 100;
 
 // APN Settings
 char GPRS_APN[] = "web.be";
@@ -40,7 +30,7 @@ int printFreeRam (){
   Serial.println((int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval));
 }
 
-void setup() {  
+void setup() {
   Serial.begin(9600);
   while (!Serial) {
     ; // wait for serial port to connect.
@@ -64,9 +54,9 @@ void setup() {
 
 void loop() {
   printFreeRam();
-  if(ready_to_start()){
-    do_actions();
-    set_finished();
+  if(readyToStart(gsmClient)){
+    doActions(gsmClient);
+    setFinished(gsmClient);
   }
   delay(5000);
   printFreeRam();

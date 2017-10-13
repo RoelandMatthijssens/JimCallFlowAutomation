@@ -1,34 +1,34 @@
-bool request_action(int action_index, char* response_buffer, int buffer_size){
+bool requestAction(int actionIndex, char* responseBuffer, int bufferSize, GSMClient client){
   printFreeRam();
-  const int path_size = 22;
-  char path[path_size];
-  snprintf(path, path_size, "/nodes/%s/action/%d", nodeId, action_index);
+  const int pathSize = 22;
+  char path[pathSize];
+  snprintf(path, pathSize, "/nodes/%s/action/%d", nodeId, actionIndex);
   Serial.println(path);
-  do_request(path, GET);
-  bool result = get_json_body(response_buffer, buffer_size);
+  doRequest(path, GET, client);
+  bool result = getJsonBody(responseBuffer, bufferSize, client);
   client.stop();
-  if(!response_buffer[0]){
+  if(!responseBuffer[0]){
     return false;
   }
   printFreeRam();
   return result;
 }
 
-bool request_node_details(char* response_buffer, int buffer_size){
-  const int path_size = 22;
-  char path[path_size];
-  snprintf(path, path_size, "/nodes/%s", nodeId); 
-  do_request(path, GET);
-  bool result = get_json_body(response_buffer, buffer_size);
+bool requestNodeDetails(char* responseBuffer, int bufferSize, GSMClient client){
+  const int pathSize = 22;
+  char path[pathSize];
+  snprintf(path, pathSize, "/nodes/%s", nodeId);
+  doRequest(path, GET, client);
+  bool result = getJsonBody(responseBuffer, bufferSize, client);
   client.stop();
-  if(!response_buffer[0]){
+  if(!responseBuffer[0]){
     Serial.println("Empty node details.");
     return false;
   }
   return result;
 }
 
-void do_request(char* path, char* method){
+void doRequest(char* path, char* method, GSMClient client){
   printFreeRam();
   char server[] = "c468dc2e.ngrok.io";
   int port = 80;

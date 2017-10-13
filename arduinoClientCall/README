@@ -17,9 +17,8 @@ A full cycle looks as follows:
 5. Dispatch on the actions type and perform the actions (Call or Text).
 6. Request the next action by bumping the actionIndex number (`http://<serveraddress>/nodes/<nodeId>/action/1`)
 7. Keep requesting and performing the actions until the server responds with an empty action.
-8. Notify that there are no more actions to perform (over serial port)
-9. Notify the server that we are finished with the action by posting to `http://<serveraddress>/nodes/<nodeId>/finish`
-10. Start over by polling the server side state of the node
+8. Notify the server that we are finished with the action by posting to `http://<serveraddress>/nodes/<nodeId>/finish`
+9. Start over by polling the server side state of the node
 
 
 Performing an actions looks as follows:

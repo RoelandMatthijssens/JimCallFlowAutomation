@@ -1,6 +1,6 @@
 {
-  "name": "Jim-Call-Automation",
-  "description": "REST endpoint for Jim Call Automation",
+  "name": "Call-Automation",
+  "description": "REST endpoint for Call Automation",
   "version": "0.0.1",
   "main": "index.js",
   "scripts": {
