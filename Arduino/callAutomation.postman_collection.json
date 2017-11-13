@@ -1,0 +1,346 @@
+{
+	"info": {
+		"name": "callAutomation",
+		"_postman_id": "beb2707f-7ed4-6be6-848c-86f8a84f7c8c",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "createNode",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "id",
+							"value": "beta",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://call-flow-testing.appspot.com/nodes/",
+					"protocol": "http",
+					"host": [
+						"call-flow-testing",
+						"appspot",
+						"com"
+					],
+					"path": [
+						"nodes",
+						""
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"equals": false,
+							"disabled": true
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "createBatch",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "id",
+							"value": "batch_name",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://call-flow-testing.appspot.com/batches",
+					"protocol": "http",
+					"host": [
+						"call-flow-testing",
+						"appspot",
+						"com"
+					],
+					"path": [
+						"batches"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "createAction",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "BatchId",
+							"value": "batch_name",
+							"description": "The batch in which this action is grouped",
+							"type": "text"
+						},
+						{
+							"key": "phoneNumber",
+							"value": "0485123456",
+							"description": "The receiving phonenumber",
+							"type": "text"
+						},
+						{
+							"key": "type",
+							"value": "CALL",
+							"description": "can be \"CALL\" or \"TEXT\"",
+							"type": "text"
+						},
+						{
+							"key": "amount",
+							"value": "1",
+							"description": "How often this action is repeated",
+							"type": "text"
+						},
+						{
+							"key": "duration",
+							"value": "1",
+							"description": "If the type is \"CALL\" this is how many seconds the call will last",
+							"type": "text"
+						},
+						{
+							"key": "content",
+							"value": "TESTSMS",
+							"description": "If the type is \"TEXT\" this content will be sent",
+							"type": "text"
+						},
+						{
+							"key": "index",
+							"value": "0",
+							"description": "Zero indexed order of this action within the batch",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://call-flow-testing.appspot.com/actions",
+					"protocol": "http",
+					"host": [
+						"call-flow-testing",
+						"appspot",
+						"com"
+					],
+					"path": [
+						"actions"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "finishNode",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://call-flow-testing.appspot.com/nodes/alpha/finish",
+					"protocol": "http",
+					"host": [
+						"call-flow-testing",
+						"appspot",
+						"com"
+					],
+					"path": [
+						"nodes",
+						"alpha",
+						"finish"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "startNode",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://call-flow-testing.appspot.com/nodes/alpha/start",
+					"protocol": "http",
+					"host": [
+						"call-flow-testing",
+						"appspot",
+						"com"
+					],
+					"path": [
+						"nodes",
+						"alpha",
+						"start"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "viewNodes",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://call-flow-testing.appspot.com/nodes",
+					"protocol": "http",
+					"host": [
+						"call-flow-testing",
+						"appspot",
+						"com"
+					],
+					"path": [
+						"nodes"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "viewNode",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://call-flow-testing.appspot.com/nodes/alpha",
+					"protocol": "http",
+					"host": [
+						"call-flow-testing",
+						"appspot",
+						"com"
+					],
+					"path": [
+						"nodes",
+						"alpha"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "addBatchToNode",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "BatchId",
+							"value": "batch_name",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://call-flow-testing.appspot.com/nodes/alpha",
+					"protocol": "http",
+					"host": [
+						"call-flow-testing",
+						"appspot",
+						"com"
+					],
+					"path": [
+						"nodes",
+						"alpha"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "getActionsForBatch",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://call-flow-testing.appspot.com/batches/batch_name",
+					"protocol": "http",
+					"host": [
+						"call-flow-testing",
+						"appspot",
+						"com"
+					],
+					"path": [
+						"batches",
+						"batch_name"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
