@@ -29,12 +29,13 @@ class arduino_Callflow():
     def create_node(self, **kwargs):
         for key, value in kwargs.items():
             if key == "id" and value != "":
-                response = requests.post(URL + "nodes/?", data = kwargs)
+                response = requests.post(URL + "nodes/?", data=kwargs)
                 if response.status_code == 200:
                     print("Node created successfully")
                     print(response.json())
-                print("Node creation failed")
-            print("Node not created, please use 'id' as an attribute")
+                else:
+                    print("Node creation failed")
+
 
     def create_batch(self, id):
         print(requests.post(URL + "batches/{}".format(id)).json())
@@ -42,7 +43,7 @@ class arduino_Callflow():
     def create_action(self, **kwargs):
         for key, value in kwargs.items():
             if key.lower() == "phonenumber" and value != "":
-                requests.post(URL + "actions", data = kwargs)
+                requests.post(URL + "actions", data=kwargs)
 
     def finish_node(self, node):
         response = requests.post(URL + "nodes/{}/finish".format(node))
@@ -57,7 +58,8 @@ class arduino_Callflow():
         for key in kwargs.items():
             if key == "node":
                 node = key
-                response = requests.post(URL + "nodes/{}".format(node), data = kwargs)
+                response = requests.post(URL + "nodes/{}".format(node),
+                    data=kwargs)
                 print(response.json())
 
     def arduino_help(self):
@@ -69,5 +71,6 @@ class arduino_Callflow():
               "Start Node(id = node)\n"
               "Add Batch to Node(BatchId)")
 
+
 Axel = arduino_Callflow()
-arduino_Callflow.delete_node(Axel, "gamma")
+arduino_Callflow.create_node(Axel, id="gamma")
