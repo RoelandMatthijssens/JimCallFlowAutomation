@@ -23,6 +23,9 @@ class arduino_Callflow():
     def delete_batches(self, id):
         print(requests.delete(URL + "batches/{}".format(id)).json())
 
+    def delete_node(self, node):
+        print(requests.delete(URL + "nodes/{}".format(node)).json())
+
     def create_node(self, **kwargs):
         for key, value in kwargs.items():
             if key == "id" and value != "":
@@ -67,5 +70,4 @@ class arduino_Callflow():
               "Add Batch to Node(BatchId)")
 
 Axel = arduino_Callflow()
-arduino_Callflow.create_action(Axel, BatchId = "Axel_Test", phoneNumber = "0479174820", type = "CALL",
-                               amount = 1, duration = 10, content= "", index = 2)
+arduino_Callflow.delete_node(Axel, "gamma")
