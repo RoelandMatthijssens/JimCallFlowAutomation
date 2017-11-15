@@ -49,12 +49,6 @@ class node():
 
 
 
-<<<<<<< HEAD
-=======
-URL = 'http://call-flow-testing.appspot.com/'
->>>>>>> d8e046fa16067ab88461fe61f8145ffc34667073
-
-
 class arduino_Callflow():
     def get_nodes(self):
         print(requests.get(URL + 'nodes').json())
@@ -85,14 +79,6 @@ class arduino_Callflow():
     def create_batch(self, batchid):
         print(requests.post(URL + 'batches', data = {'id':batchid}).json())
 
-<<<<<<< HEAD
-    def create_action(self, action):
-            print(requests.post(URL + 'actions', ).json())
-=======
-    def create_action(self, **kwargs):
-        if kwargs['phoneNumber']:
-            print(requests.post(URL + 'actions', data=kwargs).json())
->>>>>>> d8e046fa16067ab88461fe61f8145ffc34667073
 
     def finish_node(self, node):
         response = requests.post(URL + f'nodes/{node}/finish')
@@ -107,8 +93,6 @@ class arduino_Callflow():
             node = kwargs.get('node')
             print(requests.post(URL + f"nodes/{node}", data=kwargs))
 
-
-<<<<<<< HEAD
 def help():
     print('Arduino_Help\n____________\n\n'
           'Create Node(id = node, description)\n'
@@ -143,17 +127,4 @@ if __name__=='__main__':
         help()
         exit(1)
     parse_input(args)
-=======
-    def arduino_help(self):
-        print('Arduino_Help\n____________\n\n'
-              'Create Node(id = node, description)\n'
-              'Create Batch(id = batch)\n'
-              'Create Action(BatchId, phoneNumber = B MSISDN, type = CALL, amount, duration, content, index)\n'
-              'Finish Node(id = node)\n'
-              'Start Node(id = node)\n'
-              'Add Batch to Node(BatchId)')
 
-
-    Axel = arduino_Callflow()
-arduino_Callflow.get_batches(Axel)
->>>>>>> d8e046fa16067ab88461fe61f8145ffc34667073
