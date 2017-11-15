@@ -1,7 +1,54 @@
 import requests
+import sys
+import pprint
 
 
 URL = 'http://call-flow-testing.appspot.com/'
+
+class action():
+    def __init__(self, **kwargs):
+        self.BatchId = kwargs.get('BatchId', None)
+        self.phoneNumber = kwargs.get('phoneNumber', None)
+        self.type = kwargs.get('type', None)
+        self.amount = kwargs.get('amount', None)
+        self.duration = kwargs.get('duration', None)
+        self.content = kwargs.get('content', None)
+        self.index = kwargs.get('index', None)
+
+    def list(self):
+        print('listeddd')
+
+    def create(self):
+        assert self.phoneNumber
+        assert self.BatchId
+        assert self.index
+        pprint.pprint(requests.post(URL + 'actions', data=self.__dict__).json())
+
+
+class batch():
+    def __init__(self, **kwargs):
+        self.id = kwargs.get('id', None)
+
+    def list(self):
+        pprint.pprint(requests.get(URL + 'batches').json())
+
+    def create(self):
+        assert self.id
+        pprint.pprint(requests.post(URL + 'batches', data=self.__dict__).json())
+
+
+class node():
+    def __init__(self, **kwargs):
+        pass
+
+    def list(self):
+        pass
+
+    def create(self):
+        pass
+
+
+
 
 
 class arduino_Callflow():
@@ -34,9 +81,8 @@ class arduino_Callflow():
     def create_batch(self, batchid):
         print(requests.post(URL + 'batches', data = {'id':batchid}).json())
 
-    def create_action(self, **kwargs):
-        if kwargs['phoneNumber']:
-            print(requests.post(URL + 'actions', data=kwargs).json())
+    def create_action(self, action):
+            print(requests.post(URL + 'actions', ).json())
 
     def finish_node(self, node):
         response = requests.post(URL + f'nodes/{node}/finish')
@@ -52,15 +98,37 @@ class arduino_Callflow():
             print(requests.post(URL + f"nodes/{node}", data=kwargs))
 
 
-    def arduino_help(self):
-        print('Arduino_Help\n____________\n\n'
-              'Create Node(id = node, description)\n'
-              'Create Batch(id = batch)\n'
-              'Create Action(BatchId, phoneNumber = B MSISDN, type = CALL, amount, duration, content, index)\n'
-              'Finish Node(id = node)\n'
-              'Start Node(id = node)\n'
-              'Add Batch to Node(BatchId)')
+def help():
+    print('Arduino_Help\n____________\n\n'
+          'Create Node(id = node, description)\n'
+          'Create Batch(id = batch)\n'
+          'Create Action(BatchId, phoneNumber = B MSISDN, type = CALL, amount, duration, content, index)\n'
+          'Finish Node(id = node)\n'
+          'Start Node(id = node)\n'
+          'Add Batch to Node(BatchId)')
 
 
-Axel = arduino_Callflow()
-arduino_Callflow.get_batches(Axel)
+def split_argument_list(argument_list):
+    d = {}
+    for i in argument_list:
+        k, v = i.split("=")
+        d[k] = v
+    return d
+
+def callMethod(o, name):
+    getattr(o, name)()
+
+def parse_input(command_line_args):
+    command = command_line_args[1]
+    model_name = command_line_args[0]
+    clas = eval(model_name)
+    argument_dict = split_argument_list(command_line_args[2:])
+    instance = clas(**argument_dict)
+    callMethod(instance, command)
+
+if __name__=='__main__':
+    args = sys.argv[1:]  # create action name=nekfwlfw ...
+    if len(args) == 0:
+        help()
+        exit(1)
+    parse_input(args)
