@@ -16,7 +16,7 @@ class action():
         self.index = kwargs.get('index', None)
 
     def list(self):
-        print('listeddd')
+        pprint.pprint(requests.get(URL + 'actions').json())
 
     def create(self):
         assert self.phoneNumber
@@ -28,6 +28,7 @@ class action():
 class batch():
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', None)
+        self.node = kwargs.get('node', None)
 
     def list(self):
         pprint.pprint(requests.get(URL + 'batches').json())
@@ -36,62 +37,51 @@ class batch():
         assert self.id
         pprint.pprint(requests.post(URL + 'batches', data=self.__dict__).json())
 
+    def delete(self):
+        assert self.id
+        pprint.pprint(requests.delete(URL + f'batches/{self.id}').json())
+
+    def listActions(self):
+        pprint.pprint(requests.get(URL + f'batches/{self.id}').json())
+
 
 class node():
     def __init__(self, **kwargs):
-        pass
+        self.node = kwargs.get('node', None)
+        self.id = kwargs.get('id', None)
+        self.description = kwargs.get('description', None)
+        self.BatchId = kwargs.get('BatchId', None)
 
     def list(self):
-        pass
+        pprint.pprint(requests.get(URL + 'nodes').json())
+
+    def state(self):
+        assert self.node
+        pprint.pprint(requests.post(URL + f'nodes/{self.node}').json())
 
     def create(self):
-        pass
+        assert self.id
+        pprint.pprint(requests.post(URL + 'nodes/?', data=self.__dict__).json())
 
+    def delete(self):
+        assert self.node
+        pprint.pprint(requests.delete(URL + f'nodes/{self.node}').json())
 
+    def linkBatches(self):
+        assert self.BatchId
+        assert self.node
+        print("linking")
+        pprint.pprint(requests.post(URL + f'nodes/{self.node}', data=self.__dict__).json())
 
-class arduino_Callflow():
-    def get_nodes(self):
-        print(requests.get(URL + 'nodes').json())
+    def getBatches(self):
+        assert self.node
+        pprint.pprint(requests.post(URL + f'nodes/{self.node}').json())
 
-    def get_node(self, node):
-        print(requests.get(URL + f'nodes/{node}').json())
+    def start(self):
+        pprint.pprint(requests.post(URL + f'nodes/{self.node}/start').json())
 
-    def get_actions_for_batch(self, **kwargs):
-        if kwargs['id']:
-            batch = kwargs.get('id')
-            print(requests.get(URL + f'batches/{batch}').json())
-
-    def get_batches(self):
-        print(requests.get(URL + 'batches').json())
-
-    def delete_batches(self, id):
-        print(requests.delete(URL + f'batches/{id}').json())
-
-    def delete_node(self, node):
-        print(requests.delete(URL + f'nodes/{node}').json())
-
-    def create_node(self, **kwargs):
-        if  not kwargs['id']:
-            print('Node is not created, please add id as an argument')
-            return
-        print(requests.post(URL + 'nodes/?', data = kwargs).json())
-
-    def create_batch(self, batchid):
-        print(requests.post(URL + 'batches', data = {'id':batchid}).json())
-
-
-    def finish_node(self, node):
-        response = requests.post(URL + f'nodes/{node}/finish')
-        print(response.json())
-
-    def start_node(self, node):
-        response = requests.post(URL + f'nodes/{node}/start')
-        print(response.json())
-
-    def add_batch_to_node(self, **kwargs):
-        if kwargs['node']:
-            node = kwargs.get('node')
-            print(requests.post(URL + f"nodes/{node}", data=kwargs))
+    def finish(self):
+        pprint.pprint(requests.post(URL + f'nodes/{self.node}/finish').json())
 
 def help():
     print('Arduino_Help\n____________\n\n'
