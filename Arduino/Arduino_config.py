@@ -24,7 +24,6 @@ class action():
         assert self.index
         pprint.pprint(requests.post(URL + 'actions', data=self.__dict__).json())
 
-
 class batch():
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', None)
@@ -42,6 +41,7 @@ class batch():
         pprint.pprint(requests.delete(URL + f'batches/{self.id}').json())
 
     def listActions(self):
+        assert self.id
         pprint.pprint(requests.get(URL + f'batches/{self.id}').json())
 
 
@@ -70,7 +70,6 @@ class node():
     def linkBatches(self):
         assert self.BatchId
         assert self.node
-        print("linking")
         pprint.pprint(requests.post(URL + f'nodes/{self.node}', data=self.__dict__).json())
 
     def getBatches(self):
@@ -78,20 +77,26 @@ class node():
         pprint.pprint(requests.post(URL + f'nodes/{self.node}').json())
 
     def start(self):
+        assert self.node
         pprint.pprint(requests.post(URL + f'nodes/{self.node}/start').json())
 
     def finish(self):
+        assert self.node
         pprint.pprint(requests.post(URL + f'nodes/{self.node}/finish').json())
 
 def help():
-    print('Arduino_Help\n____________\n\n'
-          'Create Node(id = node, description)\n'
-          'Create Batch(id = batch)\n'
-          'Create Action(BatchId, phoneNumber = B MSISDN, type = CALL, amount, duration, content, index)\n'
-          'Finish Node(id = node)\n'
-          'Start Node(id = node)\n'
-          'Add Batch to Node(BatchId)')
-
+    print('____________\nArduino_Help\n____________\n\n')
+    print('Command to run: python3 Arduino_config.py Model Command Attribute1 Attribute2 ...\n\n')
+    print('Model: action\n\tCommand: list\n\tCommand: create\n\t\t\tBatchId\n\t\t\tphoneNumber'
+          '\n\t\t\ttype (SMS or CALL)\n\t\t\tamount\n\t\t\tcontent (in case of SMS: what to be send)'
+          '\n\t\t\tindex (order of the action in batch starting at 0)')
+    print('Model: batch\n\tCommand: list\n\tCommand: create\n\t\t\tid (the name of the batch)'
+          '\n\tCommand: delete\n\t\t\tid (the name of the batch)\n\tCommand: listActions'
+          '\n\t\t\tid (the name of the batch)')
+    print('Model: node\n\tCommand: list\n\tCommand: state\n\t\t\t node\n\tCommand: create\n\t\t\t id'
+          '\n\tCommand: delete\n\t\t\tnode\n\tCommand: linkBatches\n\t\t\tBatchId\n\t\t\tnode'
+          '\n\tCommand: getBatches\n\t\t\tnode\n\tCommand: start\n\t\t\tnode'
+          '\n\tCommand: finish\n\t\t\tnode')
 
 def split_argument_list(argument_list):
     d = {}
