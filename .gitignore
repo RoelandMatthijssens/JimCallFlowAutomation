@@ -1,0 +1,5 @@
+# Gitignore #
+#############
+
+.idea
+__pycache__
